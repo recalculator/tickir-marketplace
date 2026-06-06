@@ -46,8 +46,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   await sendEmail({
     to: email,
-    subject: `You've been invited to join ${lender.name} on LendFlow`,
-    html: `<p>You have been invited to join <strong>${lender.name}</strong> on LendFlow Marketplace.</p>
+    subject: `You've been invited to join ${lender.name} on Tickir`,
+    html: `<p>You have been invited to join <strong>${lender.name}</strong> on Tickir Marketplace.</p>
            <p>Your temporary password is: <strong>${temporaryPassword}</strong></p>
            <p>Please log in and change your password immediately.</p>`,
   });
