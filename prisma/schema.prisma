@@ -1,0 +1,155 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  passwordHash String?
+  role         UserRole      @default(BORROWER)
+  lenderMember LenderMember?
+  loanRequests LoanRequest[]
+  messages     Message[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Lender {
+  id          String             @id @default(cuid())
+  name        String
+  websiteUrl  String?
+  logoUrl     String?
+  location    String?
+  status      LenderStatus       @default(PENDING_APPROVAL)
+  members     LenderMember[]
+  preferences LenderPreferences?
+  interests   LenderInterest[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model LenderMember {
+  id        String           @id @default(cuid())
+  lenderId  String
+  lender    Lender           @relation(fields: [lenderId], references: [id])
+  userId    String           @unique
+  user      User             @relation(fields: [userId], references: [id])
+  role      LenderMemberRole @default(USER)
+  createdAt DateTime         @default(now())
+}
+
+model LenderPreferences {
+  id                 String   @id @default(cuid())
+  lenderId           String   @unique
+  lender             Lender   @relation(fields: [lenderId], references: [id])
+  minLoanAmount      Int?
+  maxLoanAmount      Int?
+  allowedGeographies Json     @default("[]")
+  allowedIndustries  Json     @default("[]")
+  loanTypes          Json     @default("[]")
+  updatedAt          DateTime @updatedAt
+}
+
+model LoanRequest {
+  id                 String          @id @default(cuid())
+  borrowerId         String
+  borrower           User            @relation(fields: [borrowerId], references: [id])
+  businessName       String
+  industry           String
+  locationCity       String
+  locationState      String
+  yearsInBusiness    Int
+  revenueBand        String
+  requestedAmountMin Int
+  requestedAmountMax Int
+  loanPurposeShort   String
+  loanPurposeDetails String
+  visibility         Visibility      @default(ANONYMIZED)
+  status             RequestStatus   @default(OPEN)
+  interests          LenderInterest[]
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  @@index([locationState, status])
+  @@index([requestedAmountMin, requestedAmountMax])
+  @@index([industry, status])
+  @@index([status])
+}
+
+model LenderInterest {
+  id                String         @id @default(cuid())
+  lenderId          String
+  lender            Lender         @relation(fields: [lenderId], references: [id])
+  loanRequestId     String
+  loanRequest       LoanRequest    @relation(fields: [loanRequestId], references: [id])
+  status            InterestStatus @default(INTERESTED)
+  introMessage      String?
+  conversation      Conversation?
+  underwriterDealId String?
+  importedAt        DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@unique([lenderId, loanRequestId])
+  @@index([loanRequestId])
+}
+
+model Conversation {
+  id               String         @id @default(cuid())
+  lenderInterestId String         @unique
+  lenderInterest   LenderInterest @relation(fields: [lenderInterestId], references: [id])
+  messages         Message[]
+  createdAt        DateTime       @default(now())
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  senderUserId   String
+  sender         User         @relation(fields: [senderUserId], references: [id])
+  body           String
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+enum UserRole {
+  BORROWER
+  LENDER_USER
+  LENDER_ADMIN
+  PLATFORM_ADMIN
+}
+
+enum LenderStatus {
+  PENDING_APPROVAL
+  ACTIVE
+  SUSPENDED
+}
+
+enum LenderMemberRole {
+  ADMIN
+  USER
+}
+
+enum Visibility {
+  PUBLIC
+  ANONYMIZED
+}
+
+enum RequestStatus {
+  OPEN
+  CLOSED
+}
+
+enum InterestStatus {
+  INTERESTED
+  ACCEPTED
+  DECLINED
+  WITHDRAWN
+}
