@@ -1,6 +1,6 @@
 # Tickir Marketplace (Repo 1 of 2)
 
-Front-end platform where borrowers post loan requests and lenders browse, filter, and express interest. When a match is accepted, it hands off to Tickir Underwriter (Repo 2) via a versioned REST API. Repo Two Link: https://github.com/recalculator/tickir-underwriter
+Front-end platform where borrowers post loan requests and lenders browse, filter, and express interest. When a match is accepted, it hands off to Tickir Underwriter (Repo 2) via a versioned REST API. Repo 2/2 Link: https://github.com/recalculator/tickir-underwriter
 
 ## Stack
 
