@@ -31,30 +31,6 @@ export default function Home() {
             <Button size="lg" variant="secondary">Sign in</Button>
           </Link>
         </div>
-
-        {/* Trust strip */}
-        <div className="mt-12 flex items-center gap-3 text-xs text-[#546b5e]">
-          <span>Trusted by</span>
-          {["First National Bank", "Midwest Community Bank", "Heritage Savings"].map((b) => (
-            <span key={b} className="px-3 py-1 rounded-full border border-[#2a3830] text-[#8fa899]">{b}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* Stats bar */}
-      <div className="border-y border-[#1f2d27] bg-[#161d19]">
-        <div className="mx-auto max-w-4xl grid grid-cols-3 divide-x divide-[#1f2d27]">
-          {[
-            { stat: "10–20 days", label: "Average deal cycle reduction" },
-            { stat: ">75%", label: "Matches within lender criteria" },
-            { stat: "4–8 hrs", label: "Saved per application" },
-          ].map(({ stat, label }) => (
-            <div key={stat} className="py-10 px-8 text-center">
-              <p className="text-3xl font-bold text-[#22c55e] mb-1">{stat}</p>
-              <p className="text-sm text-[#8fa899]">{label}</p>
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* How it works */}
