@@ -8,68 +8,58 @@ function fmt(n: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
 }
 
+const statusColor: Record<string, "indigo"|"green"|"red"|"gray"> = { INTERESTED:"indigo", ACCEPTED:"green", DECLINED:"red", WITHDRAWN:"gray" };
+
 export default function OpportunitiesPage() {
   const [interests, setInterests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/v1/lender/interests")
-      .then((r) => r.json())
-      .then((d) => { setInterests(d.data ?? []); setLoading(false); });
+    fetch("/api/v1/lender/interests").then((r) => r.json()).then((d) => { setInterests(d.data ?? []); setLoading(false); });
   }, []);
 
-  const statusColor: Record<string, "indigo" | "green" | "red" | "gray"> = {
-    INTERESTED: "indigo",
-    ACCEPTED: "green",
-    DECLINED: "red",
-    WITHDRAWN: "gray",
-  };
-
-  if (loading) return <div className="text-gray-500 py-12 text-center">Loading...</div>;
+  if (loading) return <div className="text-[#546b5e] py-12 text-center text-sm">Loading...</div>;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">My Interests</h1>
-      <p className="text-sm text-gray-500 mb-8">Loan requests you&apos;ve expressed interest in</p>
+      <h1 className="text-xl font-semibold text-[#e8f0ec] mb-1">My Interests</h1>
+      <p className="text-sm text-[#546b5e] mb-8">Loan requests you&apos;ve expressed interest in</p>
 
       {interests.length === 0 ? (
-        <div className="text-center py-24 bg-white rounded-xl border border-gray-200 text-gray-500">
-          You haven&apos;t expressed interest in any loan requests yet.{" "}
-          <Link href="/marketplace" className="text-indigo-600 hover:underline">Browse the marketplace</Link>
+        <div className="rounded-xl border border-[#1f2d27] bg-[#161d19] py-20 text-center">
+          <p className="text-[#546b5e] text-sm mb-3">No interests yet.</p>
+          <Link href="/marketplace" className="text-[#22c55e] text-sm hover:underline">Browse the marketplace →</Link>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
-          {interests.map((i) => (
-            <div key={i.id} className="bg-white rounded-xl border border-gray-200 p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-3 mb-1">
-                    <p className="font-semibold text-gray-900">
-                      {i.loanRequest.locationCity}, {i.loanRequest.locationState} · {i.loanRequest.industry}
-                    </p>
-                    <Badge label={i.status} color={statusColor[i.status] ?? "gray"} />
-                  </div>
-                  <p className="text-sm text-gray-500">
-                    {fmt(i.loanRequest.requestedAmountMin)} – {fmt(i.loanRequest.requestedAmountMax)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  {i.status === "ACCEPTED" && i.conversation && (
-                    <Link href={`/conversations/${i.conversation.id}`} className="text-sm text-indigo-600 hover:underline">
-                      Open chat →
-                    </Link>
-                  )}
-                  <Link href={`/marketplace/${i.loanRequest.id}`} className="text-sm text-gray-500 hover:text-gray-900">
-                    View request
-                  </Link>
-                </div>
-              </div>
-              {i.introMessage && (
-                <p className="text-sm text-gray-600 mt-3 bg-gray-50 rounded-lg p-3">{i.introMessage}</p>
-              )}
-              <p className="text-xs text-gray-400 mt-3">{new Date(i.createdAt).toLocaleDateString()}</p>
-            </div>
-          ))}
+        <div className="rounded-xl border border-[#1f2d27] bg-[#161d19] overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[#1f2d27]">
+                {["Borrower","Amount","Status","Date",""].map((h) => (
+                  <th key={h} className="px-5 py-3 text-left text-xs font-medium text-[#546b5e] uppercase tracking-wide">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#1f2d27]">
+              {interests.map((i) => (
+                <tr key={i.id} className="hover:bg-[#1c2620] transition-colors">
+                  <td className="px-5 py-4">
+                    <p className="font-medium text-[#e8f0ec]">{i.loanRequest.locationCity}, {i.loanRequest.locationState}</p>
+                    <p className="text-xs text-[#546b5e]">{i.loanRequest.industry}</p>
+                  </td>
+                  <td className="px-5 py-4 text-[#8fa899]">{fmt(i.loanRequest.requestedAmountMin)}–{fmt(i.loanRequest.requestedAmountMax)}</td>
+                  <td className="px-5 py-4"><Badge label={i.status} color={statusColor[i.status] ?? "gray"} /></td>
+                  <td className="px-5 py-4 text-[#546b5e]">{new Date(i.createdAt).toLocaleDateString()}</td>
+                  <td className="px-5 py-4 flex items-center gap-3">
+                    {i.status === "ACCEPTED" && i.conversation && (
+                      <Link href={`/conversations/${i.conversation.id}`} className="text-xs text-[#22c55e] hover:underline">Open chat →</Link>
+                    )}
+                    <Link href={`/marketplace/${i.loanRequest.id}`} className="text-xs text-[#546b5e] hover:text-[#8fa899]">View</Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

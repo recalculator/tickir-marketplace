@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 
@@ -10,38 +9,16 @@ function fmt(n: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
 }
 
-interface LoanRequest {
-  id: string;
-  businessName: string;
-  industry: string;
-  locationCity: string;
-  locationState: string;
-  revenueBand: string;
-  requestedAmountMin: number;
-  requestedAmountMax: number;
-  loanPurposeShort: string;
-  createdAt: string;
-  interests: { id: string; status: string }[];
-}
+const US_STATES = ["","AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"];
+const INDUSTRIES = ["","Retail","Restaurant / Food Service","Healthcare","Manufacturing","Construction","Real Estate","Technology","Transportation / Logistics","Professional Services","Wholesale / Distribution","Other"];
 
-const US_STATES = [
-  "","AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA",
-  "KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ",
-  "NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT",
-  "VA","WA","WV","WI","WY",
-];
-
-const INDUSTRIES = [
-  "", "Retail", "Restaurant / Food Service", "Healthcare", "Manufacturing",
-  "Construction", "Real Estate", "Technology", "Transportation / Logistics",
-  "Professional Services", "Wholesale / Distribution", "Other",
-];
+const selectCls = "rounded-lg border border-[#2a3830] bg-[#161d19] px-3 py-2 text-sm text-[#e8f0ec] focus:outline-none focus:ring-2 focus:ring-[#22c55e]/40";
 
 export default function MarketplacePage() {
-  const [listings, setListings] = useState<LoanRequest[]>([]);
+  const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({ state: "", industry: "", min_amount: "", max_amount: "" });
   const [total, setTotal] = useState(0);
+  const [filters, setFilters] = useState({ state: "", industry: "", min_amount: "", max_amount: "" });
 
   function buildQuery() {
     const p = new URLSearchParams();
@@ -52,7 +29,7 @@ export default function MarketplacePage() {
     return p.toString();
   }
 
-  async function fetchListings() {
+  async function load() {
     setLoading(true);
     const res = await fetch(`/api/v1/loan-requests?${buildQuery()}`).then((r) => r.json());
     setListings(res.data ?? []);
@@ -60,73 +37,86 @@ export default function MarketplacePage() {
     setLoading(false);
   }
 
-  useEffect(() => { fetchListings(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { load(); }, []); // eslint-disable-line
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Marketplace</h1>
-        <p className="text-sm text-gray-500 mt-1">Browse open loan requests from borrowers</p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-xl font-semibold text-[#e8f0ec]">Marketplace</h1>
+          <p className="text-sm text-[#546b5e] mt-0.5">{total} open request{total !== 1 ? "s" : ""}</p>
+        </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6 flex flex-wrap gap-4 items-end">
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">State</label>
-          <select className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-28" value={filters.state} onChange={(e) => setFilters((p) => ({ ...p, state: e.target.value }))}>
+      <div className="rounded-xl border border-[#1f2d27] bg-[#161d19] p-4 mb-6 flex flex-wrap gap-3 items-end">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-medium text-[#8fa899] uppercase tracking-wide">State</label>
+          <select className={`${selectCls} w-24`} value={filters.state} onChange={(e) => setFilters((p) => ({ ...p, state: e.target.value }))}>
             {US_STATES.map((s) => <option key={s} value={s}>{s || "All"}</option>)}
           </select>
         </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">Industry</label>
-          <select className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" value={filters.industry} onChange={(e) => setFilters((p) => ({ ...p, industry: e.target.value }))}>
-            {INDUSTRIES.map((i) => <option key={i} value={i}>{i || "All"}</option>)}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-medium text-[#8fa899] uppercase tracking-wide">Industry</label>
+          <select className={`${selectCls} w-48`} value={filters.industry} onChange={(e) => setFilters((p) => ({ ...p, industry: e.target.value }))}>
+            {INDUSTRIES.map((i) => <option key={i} value={i}>{i || "All industries"}</option>)}
           </select>
         </div>
-        <Input label="Min amount ($)" id="min" type="number" className="w-36" value={filters.min_amount} onChange={(e) => setFilters((p) => ({ ...p, min_amount: e.target.value }))} placeholder="0" />
-        <Input label="Max amount ($)" id="max" type="number" className="w-36" value={filters.max_amount} onChange={(e) => setFilters((p) => ({ ...p, max_amount: e.target.value }))} placeholder="Any" />
-        <Button onClick={fetchListings} variant="secondary">Apply filters</Button>
-        <Button onClick={() => { setFilters({ state: "", industry: "", min_amount: "", max_amount: "" }); setTimeout(fetchListings, 0); }} variant="ghost">Clear</Button>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-medium text-[#8fa899] uppercase tracking-wide">Min ($)</label>
+          <input type="number" className={`${selectCls} w-32`} placeholder="0" value={filters.min_amount} onChange={(e) => setFilters((p) => ({ ...p, min_amount: e.target.value }))} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-medium text-[#8fa899] uppercase tracking-wide">Max ($)</label>
+          <input type="number" className={`${selectCls} w-32`} placeholder="Any" value={filters.max_amount} onChange={(e) => setFilters((p) => ({ ...p, max_amount: e.target.value }))} />
+        </div>
+        <Button onClick={load} variant="secondary">Apply</Button>
+        <Button onClick={() => { setFilters({ state: "", industry: "", min_amount: "", max_amount: "" }); setTimeout(load, 0); }} variant="ghost">Clear</Button>
       </div>
 
-      <p className="text-sm text-gray-500 mb-4">{total} open request{total !== 1 ? "s" : ""}</p>
-
+      {/* Table */}
       {loading ? (
-        <div className="text-gray-500 py-12 text-center">Loading...</div>
+        <div className="text-[#546b5e] py-12 text-center text-sm">Loading...</div>
       ) : listings.length === 0 ? (
-        <div className="text-center py-24 bg-white rounded-xl border border-gray-200 text-gray-500">
+        <div className="rounded-xl border border-[#1f2d27] bg-[#161d19] py-20 text-center text-sm text-[#546b5e]">
           No loan requests match your filters.
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
-          {listings.map((lr) => {
-            const myInterest = lr.interests[0];
-            return (
-              <Link key={lr.id} href={`/marketplace/${lr.id}`}>
-                <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-3 mb-1">
-                        <h2 className="font-semibold text-gray-900">{lr.businessName}</h2>
-                        {myInterest && (
-                          <Badge
-                            label={myInterest.status === "ACCEPTED" ? "Matched" : myInterest.status === "INTERESTED" ? "Interested" : myInterest.status}
-                            color={myInterest.status === "ACCEPTED" ? "green" : myInterest.status === "INTERESTED" ? "indigo" : "gray"}
-                          />
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-500">{lr.locationCity}, {lr.locationState} · {lr.industry} · {lr.revenueBand}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-gray-900">{fmt(lr.requestedAmountMin)} – {fmt(lr.requestedAmountMax)}</p>
-                      <p className="text-xs text-gray-400 mt-1">{new Date(lr.createdAt).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600 mt-3">{lr.loanPurposeShort}</p>
-                </div>
-              </Link>
-            );
-          })}
+        <div className="rounded-xl border border-[#1f2d27] bg-[#161d19] overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[#1f2d27]">
+                {["Borrower","Type","Amount","Revenue","Location","Status",""].map((h) => (
+                  <th key={h} className="px-5 py-3 text-left text-xs font-medium text-[#546b5e] uppercase tracking-wide">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#1f2d27]">
+              {listings.map((lr) => {
+                const myInterest = lr.interests?.[0];
+                return (
+                  <tr key={lr.id} className="hover:bg-[#1c2620] transition-colors cursor-pointer" onClick={() => window.location.href = `/marketplace/${lr.id}`}>
+                    <td className="px-5 py-4">
+                      <p className="font-medium text-[#e8f0ec]">{lr.businessName}</p>
+                      <p className="text-xs text-[#546b5e]">{new Date(lr.createdAt).toLocaleDateString()}</p>
+                    </td>
+                    <td className="px-5 py-4 text-[#8fa899]">{lr.industry}</td>
+                    <td className="px-5 py-4 font-medium text-[#e8f0ec]">{fmt(lr.requestedAmountMin)}–{fmt(lr.requestedAmountMax)}</td>
+                    <td className="px-5 py-4 text-[#8fa899]">{lr.revenueBand}</td>
+                    <td className="px-5 py-4 text-[#8fa899]">{lr.locationCity}, {lr.locationState}</td>
+                    <td className="px-5 py-4">
+                      {myInterest ? (
+                        <Badge label={myInterest.status === "ACCEPTED" ? "Matched" : myInterest.status} color={myInterest.status === "ACCEPTED" ? "green" : "indigo"} />
+                      ) : (
+                        <Badge label="Open" color="green" />
+                      )}
+                    </td>
+                    <td className="px-5 py-4 text-[#546b5e]">›</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
