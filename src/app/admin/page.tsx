@@ -71,17 +71,17 @@ export default function AdminPage() {
     SUSPENDED: "red",
   };
 
-  if (loading) return <div className="text-gray-500 py-12 text-center">Loading...</div>;
+  if (loading) return <div className="text-[#546b5e] py-12 text-center text-sm">Loading...</div>;
 
   return (
     <div className="max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage lender institutions</p>
+          <h1 className="text-xl font-semibold text-[#e8f0ec]">Admin Panel</h1>
+          <p className="text-sm text-[#546b5e] mt-0.5">Manage lender institutions</p>
         </div>
         <div className="flex items-center gap-3">
-          {createMsg && <span className="text-sm text-green-600">{createMsg}</span>}
+          {createMsg && <span className="text-sm text-[#22c55e]">{createMsg}</span>}
           <Button onClick={() => setShowCreateForm((v) => !v)}>
             {showCreateForm ? "Cancel" : "+ New Lender"}
           </Button>
@@ -89,8 +89,8 @@ export default function AdminPage() {
       </div>
 
       {showCreateForm && (
-        <form onSubmit={handleCreateLender} className="bg-white rounded-xl border border-gray-200 p-6 mb-6 flex flex-col gap-4">
-          <h2 className="font-semibold text-gray-900">Create Lender Institution</h2>
+        <form onSubmit={handleCreateLender} className="rounded-xl border border-[#1f2d27] bg-[#161d19] p-6 mb-6 flex flex-col gap-4">
+          <h2 className="font-semibold text-[#e8f0ec]">Create Lender Institution</h2>
           <div className="grid grid-cols-3 gap-4">
             <Input label="Name" id="lname" value={newLender.name} onChange={(e) => setNewLender((p) => ({ ...p, name: e.target.value }))} required />
             <Input label="Website" id="lwebsite" type="url" placeholder="https://..." value={newLender.websiteUrl} onChange={(e) => setNewLender((p) => ({ ...p, websiteUrl: e.target.value }))} />
@@ -102,22 +102,22 @@ export default function AdminPage() {
 
       <div className="flex flex-col gap-4">
         {lenders.length === 0 && (
-          <div className="text-center py-16 bg-white rounded-xl border border-gray-200 text-gray-500">
+          <div className="text-center py-16 rounded-xl border border-[#1f2d27] bg-[#161d19] text-[#546b5e]">
             No lenders yet. Create one above.
           </div>
         )}
         {lenders.map((lender) => (
-          <div key={lender.id} className="bg-white rounded-xl border border-gray-200 p-6">
+          <div key={lender.id} className="rounded-xl border border-[#1f2d27] bg-[#161d19] p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <div className="flex items-center gap-3 mb-1">
-                  <h2 className="font-semibold text-gray-900">{lender.name}</h2>
+                  <h2 className="font-semibold text-[#e8f0ec]">{lender.name}</h2>
                   <Badge label={lender.status} color={statusColor[lender.status] ?? "gray"} />
                 </div>
-                <p className="text-sm text-gray-500">
-                  {lender.location ?? "—"} {lender.websiteUrl && <> · <a href={lender.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">{lender.websiteUrl}</a></>}
+                <p className="text-sm text-[#546b5e]">
+                  {lender.location ?? "—"} {lender.websiteUrl && <> · <a href={lender.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-[#22c55e] hover:underline">{lender.websiteUrl}</a></>}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">{lender.members?.length ?? 0} member{lender.members?.length !== 1 ? "s" : ""}</p>
+                <p className="text-xs text-[#546b5e] mt-1">{lender.members?.length ?? 0} member{lender.members?.length !== 1 ? "s" : ""}</p>
               </div>
               <div className="flex gap-2">
                 {lender.status === "PENDING_APPROVAL" && (
@@ -133,7 +133,7 @@ export default function AdminPage() {
             </div>
 
             {/* Invite user */}
-            <div className="border-t border-gray-100 pt-4 flex items-center gap-3">
+            <div className="border-t border-[#1f2d27] pt-4 flex items-center gap-3">
               <Input
                 id={`invite-${lender.id}`}
                 placeholder="Invite user by email"
@@ -151,7 +151,7 @@ export default function AdminPage() {
               >
                 Send invite
               </Button>
-              {inviteState[lender.id]?.done && <span className="text-sm text-green-600">Invited!</span>}
+              {inviteState[lender.id]?.done && <span className="text-sm text-[#22c55e]">Invited!</span>}
             </div>
           </div>
         ))}

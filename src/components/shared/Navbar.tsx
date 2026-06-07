@@ -24,6 +24,7 @@ export function Navbar() {
               {role === "BORROWER" && <>
                 <NavLink href="/dashboard">Dashboard</NavLink>
                 <NavLink href="/loan-request/new">+ New Request</NavLink>
+                <NavLink href="/profile/setup">Profile</NavLink>
               </>}
               {(role === "LENDER_USER" || role === "LENDER_ADMIN") && <>
                 <NavLink href="/marketplace">Marketplace</NavLink>

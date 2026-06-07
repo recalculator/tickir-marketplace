@@ -26,9 +26,11 @@ function fmt(n: number) {
 export default function DashboardPage() {
   const [requests, setRequests] = useState<LoanRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [profileComplete, setProfileComplete] = useState(true);
 
   useEffect(() => {
     fetch("/api/v1/loan-requests/me").then((r) => r.json()).then((d) => { setRequests(d.data ?? []); setLoading(false); });
+    fetch("/api/v1/auth/me").then((r) => r.json()).then((d) => { setProfileComplete(Boolean(d.data?.profileComplete)); });
   }, []);
 
   const open = requests.filter((r) => r.status === "OPEN").length;
@@ -39,6 +41,19 @@ export default function DashboardPage() {
 
   return (
     <div>
+      {/* Profile setup prompt */}
+      {!profileComplete && (
+        <div className="mb-6 rounded-xl border border-[#22c55e]/30 bg-[#22c55e]/5 px-5 py-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-[#e8f0ec]">Finish setting up your profile</p>
+            <p className="text-xs text-[#8fa899] mt-0.5">Upload your tax returns, bank statements, and ID so lenders can move faster on your requests.</p>
+          </div>
+          <Link href="/profile/setup" className="shrink-0">
+            <Button size="sm">Complete profile</Button>
+          </Link>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>

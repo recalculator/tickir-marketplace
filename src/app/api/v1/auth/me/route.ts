@@ -16,6 +16,7 @@ export async function GET() {
       email: true,
       role: true,
       createdAt: true,
+      profileComplete: true,
       lenderMember: { include: { lender: true } },
     },
   });

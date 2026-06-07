@@ -33,10 +33,20 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
     const accepted = loanRequest.interests.some(
       (i) => i.lenderId === user.lenderId && i.status === "ACCEPTED"
     );
+    let borrowerDocuments: { id: string; category: string; fileName: string; mimeType: string; sizeBytes: number; createdAt: Date }[] = [];
+    if (accepted) {
+      borrowerDocuments = await prisma.document.findMany({
+        where: { userId: loanRequest.borrowerId },
+        select: { id: true, category: true, fileName: true, mimeType: true, sizeBytes: true, createdAt: true },
+        orderBy: { createdAt: "desc" },
+      });
+    }
+
     const data = {
       ...loanRequest,
       businessName: accepted ? loanRequest.businessName : `Business in ${loanRequest.locationCity}, ${loanRequest.locationState}`,
       borrower: accepted ? loanRequest.borrower : undefined,
+      borrowerDocuments,
     };
     return NextResponse.json({ success: true, data });
   }

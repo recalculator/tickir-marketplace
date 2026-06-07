@@ -91,30 +91,30 @@ export default function SettingsPage() {
     setMembers((prev) => prev.filter((m) => m.userId !== userId));
   }
 
-  if (loading) return <div className="text-gray-500 py-12 text-center">Loading...</div>;
+  if (loading) return <div className="text-[#546b5e] py-12 text-center text-sm">Loading...</div>;
 
   return (
     <div className="max-w-3xl mx-auto flex flex-col gap-8">
-      <h1 className="text-2xl font-bold text-gray-900">Lender Settings</h1>
+      <h1 className="text-xl font-semibold text-[#e8f0ec]">Lender Settings</h1>
 
       {/* Profile */}
-      <section className="bg-white rounded-xl border border-gray-200 p-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Institution Profile</h2>
+      <section className="rounded-xl border border-[#1f2d27] bg-[#161d19] p-8">
+        <h2 className="text-sm font-semibold text-[#e8f0ec] uppercase tracking-wide mb-6">Institution Profile</h2>
         <form onSubmit={saveProfile} className="flex flex-col gap-4">
           <Input label="Institution name" id="name" value={lender.name ?? ""} onChange={(e) => setLender((p: any) => ({ ...p, name: e.target.value }))} required />
           <Input label="Website" id="website" type="url" placeholder="https://..." value={lender.websiteUrl ?? ""} onChange={(e) => setLender((p: any) => ({ ...p, websiteUrl: e.target.value }))} />
           <Input label="Location" id="location" placeholder="City, State" value={lender.location ?? ""} onChange={(e) => setLender((p: any) => ({ ...p, location: e.target.value }))} />
           <div className="flex items-center gap-4">
             <Button type="submit" loading={savingProfile}>Save profile</Button>
-            {profileMsg && <span className="text-sm text-green-600">{profileMsg}</span>}
+            {profileMsg && <span className="text-sm text-[#22c55e]">{profileMsg}</span>}
           </div>
         </form>
       </section>
 
       {/* Lending Preferences */}
-      <section className="bg-white rounded-xl border border-gray-200 p-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">Lending Preferences</h2>
-        <p className="text-sm text-gray-500 mb-6">These filters determine which loan requests appear as "Matching" for your institution.</p>
+      <section className="rounded-xl border border-[#1f2d27] bg-[#161d19] p-8">
+        <h2 className="text-sm font-semibold text-[#e8f0ec] uppercase tracking-wide mb-2">Lending Preferences</h2>
+        <p className="text-sm text-[#546b5e] mb-6">These filters determine which loan requests appear as "Matching" for your institution.</p>
         <form onSubmit={savePrefs} className="flex flex-col gap-6">
           <div className="grid grid-cols-2 gap-4">
             <Input label="Min loan amount ($)" id="min" type="number" min="0" value={prefs.minLoanAmount ?? ""} onChange={(e) => setPrefs((p: any) => ({ ...p, minLoanAmount: e.target.value }))} placeholder="e.g. 100000" />
@@ -122,15 +122,15 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-3">States you lend in</p>
+            <p className="text-sm font-medium text-[#8fa899] mb-3">States you lend in</p>
             <div className="flex flex-wrap gap-2">
               {US_STATES.map((s) => (
                 <button key={s} type="button"
                   onClick={() => toggleArr("allowedGeographies", s)}
                   className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
                     (prefs.allowedGeographies ?? []).includes(s)
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "bg-white text-gray-600 border-gray-300 hover:border-indigo-400"
+                      ? "bg-[#22c55e] text-[#0f1512] border-[#22c55e]"
+                      : "bg-[#161d19] text-[#8fa899] border-[#2a3830] hover:border-[#22c55e]/50"
                   }`}>
                   {s}
                 </button>
@@ -139,15 +139,15 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-3">Industries</p>
+            <p className="text-sm font-medium text-[#8fa899] mb-3">Industries</p>
             <div className="flex flex-wrap gap-2">
               {INDUSTRIES.map((ind) => (
                 <button key={ind} type="button"
                   onClick={() => toggleArr("allowedIndustries", ind)}
                   className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
                     (prefs.allowedIndustries ?? []).includes(ind)
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "bg-white text-gray-600 border-gray-300 hover:border-indigo-400"
+                      ? "bg-[#22c55e] text-[#0f1512] border-[#22c55e]"
+                      : "bg-[#161d19] text-[#8fa899] border-[#2a3830] hover:border-[#22c55e]/50"
                   }`}>
                   {ind}
                 </button>
@@ -156,15 +156,15 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-3">Loan types</p>
+            <p className="text-sm font-medium text-[#8fa899] mb-3">Loan types</p>
             <div className="flex flex-wrap gap-2">
               {LOAN_TYPES.map((lt) => (
                 <button key={lt} type="button"
                   onClick={() => toggleArr("loanTypes", lt)}
                   className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
                     (prefs.loanTypes ?? []).includes(lt)
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "bg-white text-gray-600 border-gray-300 hover:border-indigo-400"
+                      ? "bg-[#22c55e] text-[#0f1512] border-[#22c55e]"
+                      : "bg-[#161d19] text-[#8fa899] border-[#2a3830] hover:border-[#22c55e]/50"
                   }`}>
                   {lt}
                 </button>
@@ -174,22 +174,22 @@ export default function SettingsPage() {
 
           <div className="flex items-center gap-4">
             <Button type="submit" loading={savingPrefs}>Save preferences</Button>
-            {prefsMsg && <span className="text-sm text-green-600">{prefsMsg}</span>}
+            {prefsMsg && <span className="text-sm text-[#22c55e]">{prefsMsg}</span>}
           </div>
         </form>
       </section>
 
       {/* Members */}
-      <section className="bg-white rounded-xl border border-gray-200 p-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Team Members</h2>
+      <section className="rounded-xl border border-[#1f2d27] bg-[#161d19] p-8">
+        <h2 className="text-sm font-semibold text-[#e8f0ec] uppercase tracking-wide mb-6">Team Members</h2>
         {members.length === 0 ? (
-          <p className="text-sm text-gray-500">No members yet.</p>
+          <p className="text-sm text-[#546b5e]">No members yet.</p>
         ) : (
-          <div className="flex flex-col divide-y divide-gray-100">
+          <div className="flex flex-col divide-y divide-[#1f2d27]">
             {members.map((m) => (
               <div key={m.userId} className="flex items-center justify-between py-3">
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{m.user.email}</p>
+                  <p className="text-sm font-medium text-[#e8f0ec]">{m.user.email}</p>
                   <Badge label={m.role} color={m.role === "ADMIN" ? "indigo" : "gray"} />
                 </div>
                 <Button variant="ghost" size="sm" onClick={() => removeMember(m.userId)}>Remove</Button>
