@@ -6,15 +6,16 @@ import { sendEmail } from "@/lib/email";
 import { UserRole } from "@prisma/client";
 
 // POST /api/v1/loan-requests/:id/interests — Lender expresses interest
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { error, session } = await requireAuth();
   if (error) return error;
 
   const roleError = requireRole(session!, UserRole.LENDER_USER, UserRole.LENDER_ADMIN);
   if (roleError) return roleError;
 
+  const { id } = await params;
   const loanRequest = await prisma.loanRequest.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { borrower: { select: { email: true } } },
   });
   if (!loanRequest) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   if (!lenderId) return NextResponse.json({ success: false, error: "Not associated with a lender" }, { status: 403 });
 
   const existing = await prisma.lenderInterest.findUnique({
-    where: { lenderId_loanRequestId: { lenderId, loanRequestId: params.id } },
+    where: { lenderId_loanRequestId: { lenderId, loanRequestId: id } },
   });
   if (existing) {
     return NextResponse.json({ success: false, error: "Already expressed interest" }, { status: 409 });
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const { introMessage } = body;
 
   const interest = await prisma.lenderInterest.create({
-    data: { lenderId, loanRequestId: params.id, introMessage },
+    data: { lenderId, loanRequestId: id, introMessage },
     include: { lender: { select: { name: true } } },
   });
 
@@ -52,21 +53,22 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 }
 
 // GET /api/v1/loan-requests/:id/interests — Borrower views interests on their request
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { error, session } = await requireAuth();
   if (error) return error;
 
   const roleError = requireRole(session!, UserRole.BORROWER);
   if (roleError) return roleError;
 
-  const loanRequest = await prisma.loanRequest.findUnique({ where: { id: params.id } });
+  const { id } = await params;
+  const loanRequest = await prisma.loanRequest.findUnique({ where: { id } });
   if (!loanRequest) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
   if (loanRequest.borrowerId !== session!.user.id) {
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
   }
 
   const interests = await prisma.lenderInterest.findMany({
-    where: { loanRequestId: params.id },
+    where: { loanRequestId: id },
     include: { lender: { select: { name: true, websiteUrl: true } } },
     orderBy: { createdAt: "desc" },
   });

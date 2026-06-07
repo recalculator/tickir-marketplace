@@ -6,7 +6,8 @@ import { sendEmail } from "@/lib/email";
 import { UserRole } from "@prisma/client";
 
 // PUT /api/v1/interests/:id/decline — Borrower declines a lender's interest
-export async function PUT(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const { error, session } = await requireAuth();
   if (error) return error;
 
@@ -14,7 +15,7 @@ export async function PUT(_req: NextRequest, { params }: { params: { id: string 
   if (roleError) return roleError;
 
   const interest = await prisma.lenderInterest.findUnique({
-    where: { id: params.id },
+    where: { id: id },
     include: {
       loanRequest: true,
       lender: { include: { members: { include: { user: { select: { email: true } } } } } },
@@ -30,7 +31,7 @@ export async function PUT(_req: NextRequest, { params }: { params: { id: string 
   }
 
   const updated = await prisma.lenderInterest.update({
-    where: { id: params.id },
+    where: { id: id },
     data: { status: "DECLINED" },
   });
 

@@ -3,11 +3,12 @@ import { requireAuth } from "@/lib/middleware/requireAuth";
 import { prisma } from "@/lib/db";
 
 // PUT /api/v1/loan-requests/:id/close
-export async function PUT(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { error, session } = await requireAuth();
   if (error) return error;
 
-  const loanRequest = await prisma.loanRequest.findUnique({ where: { id: params.id } });
+  const { id } = await params;
+  const loanRequest = await prisma.loanRequest.findUnique({ where: { id } });
   if (!loanRequest) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
   if (loanRequest.borrowerId !== session!.user.id) {
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
@@ -17,7 +18,7 @@ export async function PUT(_req: NextRequest, { params }: { params: { id: string 
   }
 
   const updated = await prisma.loanRequest.update({
-    where: { id: params.id },
+    where: { id },
     data: { status: "CLOSED" },
   });
 

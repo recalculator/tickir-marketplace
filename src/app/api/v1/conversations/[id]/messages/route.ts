@@ -24,16 +24,17 @@ async function canAccessConversation(conversationId: string, userId: string, use
 }
 
 // GET /api/v1/conversations/:id/messages
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const { error, session } = await requireAuth();
   if (error) return error;
 
   const user = session!.user;
-  const conversation = await canAccessConversation(params.id, user.id, user.role, user.lenderId);
+  const conversation = await canAccessConversation(id, user.id, user.role, user.lenderId);
   if (!conversation) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
   const messages = await prisma.message.findMany({
-    where: { conversationId: params.id },
+    where: { conversationId: id },
     include: { sender: { select: { id: true, email: true, role: true } } },
     orderBy: { createdAt: "asc" },
   });
@@ -42,12 +43,13 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 }
 
 // POST /api/v1/conversations/:id/messages — Send a message
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const { error, session } = await requireAuth();
   if (error) return error;
 
   const user = session!.user;
-  const conversation = await canAccessConversation(params.id, user.id, user.role, user.lenderId);
+  const conversation = await canAccessConversation(id, user.id, user.role, user.lenderId);
   if (!conversation) return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
   const body = await req.json();
@@ -58,7 +60,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
 
   const message = await prisma.message.create({
-    data: { conversationId: params.id, senderUserId: user.id, body: messageBody.trim() },
+    data: { conversationId: id, senderUserId: user.id, body: messageBody.trim() },
     include: { sender: { select: { id: true, email: true, role: true } } },
   });
 

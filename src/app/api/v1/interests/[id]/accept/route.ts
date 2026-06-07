@@ -6,7 +6,8 @@ import { sendEmail } from "@/lib/email";
 import { UserRole } from "@prisma/client";
 
 // PUT /api/v1/interests/:id/accept — Borrower accepts a lender's interest
-export async function PUT(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const { error, session } = await requireAuth();
   if (error) return error;
 
@@ -14,7 +15,7 @@ export async function PUT(_req: NextRequest, { params }: { params: { id: string 
   if (roleError) return roleError;
 
   const interest = await prisma.lenderInterest.findUnique({
-    where: { id: params.id },
+    where: { id: id },
     include: {
       loanRequest: { include: { borrower: { select: { email: true } } } },
       lender: { include: { members: { include: { user: { select: { email: true } } } } } },
@@ -32,19 +33,19 @@ export async function PUT(_req: NextRequest, { params }: { params: { id: string 
   // Accept this interest, decline all others, create conversation
   const [accepted] = await prisma.$transaction([
     prisma.lenderInterest.update({
-      where: { id: params.id },
+      where: { id: id },
       data: { status: "ACCEPTED" },
     }),
     prisma.lenderInterest.updateMany({
       where: {
         loanRequestId: interest.loanRequestId,
-        id: { not: params.id },
+        id: { not: id },
         status: "INTERESTED",
       },
       data: { status: "DECLINED" },
     }),
     prisma.conversation.create({
-      data: { lenderInterestId: params.id },
+      data: { lenderInterestId: id },
     }),
   ]);
 

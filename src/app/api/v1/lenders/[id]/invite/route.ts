@@ -7,7 +7,8 @@ import { sendEmail } from "@/lib/email";
 import { UserRole, LenderMemberRole } from "@prisma/client";
 
 // POST /api/v1/lenders/:id/invite — Invite a user to join a lender
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const { error, session } = await requireAuth();
   if (error) return error;
 
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ success: false, error: "email is required" }, { status: 400 });
   }
 
-  const lender = await prisma.lender.findUnique({ where: { id: params.id } });
+  const lender = await prisma.lender.findUnique({ where: { id: id } });
   if (!lender) {
     return NextResponse.json({ success: false, error: "Lender not found" }, { status: 404 });
   }
