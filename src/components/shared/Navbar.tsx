@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/Button";
+import { Logo } from "@/components/shared/Logo";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -14,13 +15,8 @@ export function Navbar() {
         <div className="flex h-14 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-6 h-6 grid grid-cols-2 gap-0.5">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="rounded-sm bg-[#22c55e]" />
-                ))}
-              </div>
-              <span className="text-[#e8f0ec] font-semibold text-sm tracking-tight">Tickir</span>
+            <Link href="/">
+              <Logo size={26} />
             </Link>
 
             {/* Nav links by role */}

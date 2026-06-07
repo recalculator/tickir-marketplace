@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Logo } from "@/components/shared/Logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -32,12 +33,7 @@ export default function LoginPage() {
     <div className="flex min-h-[80vh] items-center justify-center">
       <div className="w-full max-w-sm">
         {/* Logo mark */}
-        <div className="flex items-center gap-2 mb-8">
-          <div className="w-6 h-6 grid grid-cols-2 gap-0.5">
-            {[...Array(4)].map((_, i) => <div key={i} className="rounded-sm bg-[#22c55e]" />)}
-          </div>
-          <span className="text-[#e8f0ec] font-semibold text-sm">Tickir</span>
-        </div>
+        <div className="mb-8"><Logo size={30} /></div>
 
         <h1 className="text-2xl font-bold text-[#e8f0ec] mb-1">Welcome back</h1>
         <p className="text-sm text-[#546b5e] mb-8">Sign in to your account</p>
