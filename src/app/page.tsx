@@ -32,29 +32,6 @@ export default function Home() {
           </Link>
         </div>
       </div>
-
-      {/* How it works */}
-      <div className="py-24 px-4">
-        <p className="text-center text-xs font-semibold tracking-widest text-[#546b5e] uppercase mb-12">
-          How it works
-        </p>
-        <div className="mx-auto max-w-4xl grid grid-cols-3 gap-6">
-          {[
-            { color: "border-blue-500/40 bg-blue-900/10", icon: "↑", title: "Post your request", body: "Describe your loan need once. Your business stays anonymous until you choose a lender." },
-            { color: "border-yellow-500/40 bg-yellow-900/10", icon: "⚡", title: "Review interest", body: "Vetted lenders express interest with an intro message. You stay in control." },
-            { color: "border-[#22c55e]/40 bg-[#22c55e]/10", icon: "✓", title: "Get matched", body: "Accept the best fit. A private conversation opens and underwriting begins." },
-          ].map(({ color, icon, title, body }, i) => (
-            <div key={i} className={`rounded-2xl border ${color} p-8 flex flex-col gap-4`}>
-              <div className="text-2xl">{icon}</div>
-              <div>
-                <p className="text-xs text-[#546b5e] uppercase tracking-wide mb-2">Step {i + 1}</p>
-                <h3 className="font-semibold text-[#e8f0ec] mb-2">{title}</h3>
-                <p className="text-sm text-[#8fa899] leading-relaxed">{body}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
