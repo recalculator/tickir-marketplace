@@ -4,42 +4,53 @@ interface LogoProps {
   className?: string;
 }
 
-// Dot grid color map matching the Tickir brand mark.
-// Row/col indices: [row][col], 4x4 grid, top-left = (0,0)
-const DOT_COLORS: (string | null)[][] = [
-  ["#e5e9e7", "#e5e9e7", "#e5e9e7", null],   // top row — last cell replaced by checkmark
-  ["#e5e9e7", "#e5e9e7", "#22c55e", null],
-  ["#e5e9e7", "#22c55e", "#22c55e", null],
-  ["#86e3b8", "#34d399", "#22c55e", "#16a34a"],
+// 4x4 dot grid, top-left = (row 0, col 0).
+// Color progression: muted gray (incomplete) -> green gradient (complete),
+// reading like a "progress" sweep from top-left to bottom-right.
+// Top-right dot is replaced by the checkmark glyph.
+const GRID: (string | null)[][] = [
+  ["#cfd8d3", "#cfd8d3", "#b9e8cb", null],
+  ["#cfd8d3", "#8fdbb0", "#4fce8f", "#22c55e"],
+  ["#aee7c7", "#4fce8f", "#22c55e", "#1a9c4a"],
+  ["#7fdba8", "#34c97a", "#1a9c4a", "#0f7a3a"],
 ];
 
-export function Logo({ size = 28, showWordmark = true, className = "" }: LogoProps) {
-  const dot = size / 5; // dot diameter relative to grid box
-  const gap = size / 12;
+const SPACING = 9.5;
+const OFFSET = 6.5;
+const RADIUS = 3.6;
 
+export function Logo({ size = 28, showWordmark = true, className = "" }: LogoProps) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {DOT_COLORS.map((row, r) =>
+        {GRID.map((row, r) =>
           row.map((color, c) => {
             if (color === null) return null;
-            const cx = 8 + c * 11;
-            const cy = 8 + r * 11;
-            return <circle key={`${r}-${c}`} cx={cx} cy={cy} r="3.4" fill={color} />;
+            return (
+              <circle
+                key={`${r}-${c}`}
+                cx={OFFSET + c * SPACING}
+                cy={OFFSET + r * SPACING}
+                r={RADIUS}
+                fill={color}
+              />
+            );
           })
         )}
-        {/* Checkmark overlapping top-right */}
+        {/* Checkmark badge overlapping the top-right corner of the grid */}
+        <circle cx={OFFSET + 3 * SPACING} cy={OFFSET} r={6.5} fill="#0b3d22" />
         <path
-          d="M30 17 L35.5 11.5 L46 1"
-          stroke="#0f4d2e"
-          strokeWidth="5.5"
+          d={`M${OFFSET + 3 * SPACING - 3} ${OFFSET} L${OFFSET + 3 * SPACING - 0.8} ${OFFSET + 2.2} L${OFFSET + 3 * SPACING + 3.2} ${OFFSET - 2.6}`}
+          stroke="#eafff2"
+          strokeWidth="1.7"
           strokeLinecap="round"
           strokeLinejoin="round"
-          transform="translate(-2, 9)"
           fill="none"
         />
       </svg>
-      {showWordmark && <span className="text-[#e8f0ec] font-semibold text-sm tracking-tight">Tickir</span>}
+      {showWordmark && (
+        <span className="text-[#e8f0ec] font-semibold text-sm tracking-tight">Tickir</span>
+      )}
     </div>
   );
 }
