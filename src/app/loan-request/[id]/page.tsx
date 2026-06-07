@@ -71,41 +71,41 @@ export default function LoanRequestDetailPage() {
     setActioning(null);
   }
 
-  if (loading) return <div className="text-gray-500 py-12 text-center">Loading...</div>;
-  if (!req) return <div className="text-gray-500 py-12 text-center">Not found.</div>;
+  if (loading) return <div className="text-[#546b5e] py-12 text-center text-sm">Loading...</div>;
+  if (!req) return <div className="text-[#546b5e] py-12 text-center text-sm">Not found.</div>;
 
   const isBorrower = session?.user?.role === "BORROWER";
   const accepted = interests.find((i) => i.status === "ACCEPTED");
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-        <Link href="/dashboard" className="hover:text-gray-900">Dashboard</Link>
+      <div className="flex items-center gap-2 text-sm text-[#546b5e] mb-6">
+        <Link href="/dashboard" className="hover:text-[#e8f0ec]">Dashboard</Link>
         <span>/</span>
         <span>{req.businessName}</span>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-8 mb-6">
+      <div className="rounded-xl border border-[#1f2d27] bg-[#161d19] p-8 mb-6">
         <div className="flex items-start justify-between mb-6">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <h1 className="text-2xl font-bold text-gray-900">{req.businessName}</h1>
+              <h1 className="text-2xl font-bold text-[#e8f0ec]">{req.businessName}</h1>
               <Badge label={req.status} color={req.status === "OPEN" ? "green" : "gray"} />
             </div>
-            <p className="text-gray-500">{req.locationCity}, {req.locationState} · {req.industry}</p>
+            <p className="text-[#546b5e]">{req.locationCity}, {req.locationState} · {req.industry}</p>
           </div>
           <div className="text-right">
-            <p className="text-xl font-bold text-gray-900">{fmt(req.requestedAmountMin)} – {fmt(req.requestedAmountMax)}</p>
+            <p className="text-xl font-bold text-[#22c55e]">{fmt(req.requestedAmountMin)} – {fmt(req.requestedAmountMax)}</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-6 py-6 border-y border-gray-100 mb-6">
-          <div><p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Revenue</p><p className="font-medium text-gray-900">{req.revenueBand}</p></div>
-          <div><p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Years in Business</p><p className="font-medium text-gray-900">{req.yearsInBusiness}</p></div>
-          <div><p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Purpose</p><p className="font-medium text-gray-900">{req.loanPurposeShort}</p></div>
+        <div className="grid grid-cols-3 gap-6 py-6 border-y border-[#1f2d27] mb-6">
+          <div><p className="text-xs text-[#546b5e] uppercase tracking-wide mb-1">Revenue</p><p className="font-medium text-[#e8f0ec]">{req.revenueBand}</p></div>
+          <div><p className="text-xs text-[#546b5e] uppercase tracking-wide mb-1">Years in Business</p><p className="font-medium text-[#e8f0ec]">{req.yearsInBusiness}</p></div>
+          <div><p className="text-xs text-[#546b5e] uppercase tracking-wide mb-1">Purpose</p><p className="font-medium text-[#e8f0ec]">{req.loanPurposeShort}</p></div>
         </div>
 
-        <p className="text-gray-700 leading-relaxed">{req.loanPurposeDetails}</p>
+        <p className="text-[#8fa899] leading-relaxed">{req.loanPurposeDetails}</p>
 
         {isBorrower && req.status === "OPEN" && (
           <div className="mt-6 flex justify-end">
@@ -116,22 +116,22 @@ export default function LoanRequestDetailPage() {
 
       {isBorrower && (
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          <h2 className="text-sm font-semibold text-[#e8f0ec] uppercase tracking-wide mb-4">
             Lender Interest ({interests.length})
           </h2>
           {interests.length === 0 ? (
-            <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-500">
+            <div className="rounded-xl border border-[#1f2d27] bg-[#161d19] p-8 text-center text-[#546b5e] text-sm">
               No lenders have expressed interest yet.
             </div>
           ) : (
             <div className="flex flex-col gap-3">
               {interests.map((interest) => (
-                <div key={interest.id} className="bg-white rounded-xl border border-gray-200 p-6">
+                <div key={interest.id} className="rounded-xl border border-[#1f2d27] bg-[#161d19] p-6">
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="font-semibold text-gray-900">{interest.lender.name}</p>
+                      <p className="font-semibold text-[#e8f0ec]">{interest.lender.name}</p>
                       {interest.lender.websiteUrl && (
-                        <a href={interest.lender.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-600 hover:underline">{interest.lender.websiteUrl}</a>
+                        <a href={interest.lender.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[#22c55e] hover:underline">{interest.lender.websiteUrl}</a>
                       )}
                     </div>
                     <Badge
@@ -140,7 +140,7 @@ export default function LoanRequestDetailPage() {
                     />
                   </div>
                   {interest.introMessage && (
-                    <p className="text-sm text-gray-600 mt-3 bg-gray-50 rounded-lg p-3">{interest.introMessage}</p>
+                    <p className="text-sm text-[#8fa899] mt-3 bg-[#1c2620] rounded-lg p-3">{interest.introMessage}</p>
                   )}
                   <div className="mt-4 flex items-center gap-3">
                     {interest.status === "INTERESTED" && (
